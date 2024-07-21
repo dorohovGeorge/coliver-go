@@ -4,28 +4,25 @@ import (
 	"context"
 	_ "database/sql"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v3"
 	"github.com/jackc/pgx/v5"
 	_ "github.com/lib/pq"
 	"log"
-	"net/http"
 	"os"
 	"time"
 )
 
 func main() {
-	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"answer": makeRequest(),
-		})
+	app := fiber.New()
+	app.Get("/", func(c fiber.Ctx) error {
+		// Send a string response to the client
+		return c.JSON(makeRequest())
 	})
-	r.Run()
-
+	log.Fatal(app.Listen(":9090"))
 }
 
 func makeRequest() string {
-	connStr := "postgresql://postgres:4fFzG5313GCQnLCr@localhost:5432/postgres"
+	connStr := "postgresql://postgres:4fFzG5313GCQnLCr@94.103.89.23:5432/postgres"
 	conn, err := pgx.Connect(context.Background(), connStr)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
